@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alaa & Shahd</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#000;
+}
+
+/* كل المشاهد */
+.scene{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 1s ease;
+}
+
+/* =========================
+   خلفية الورد
+========================= */
+.flowers{
+    background-image:url("file_000000005d4082118a90fa08f9eb0fcb.png");
+    background-size:cover;
+    background-position:center;
+    opacity:1;
+    visibility:visible;
+    z-index:1;
+}
+
+.flowers.hide{
+    opacity:0;
+}
+
+/* =========================
+   مشهد الظرف المقفول
+========================= */
+.envelope-scene{
+    z-index:2;
+    background-image:url("file_000000005d4082118a90fa08f9eb0fcb.png");
+    background-size:cover;
+    background-position:center;
+    flex-direction:column;
+    justify-content:center;
+    gap:20px;
+}
+
+.envelope-scene.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.closed-envelope{
+    width:min(70vw,520px);
+    max-height:55vh;
+    object-fit:contain;
+
+    /* يخلي الأسود الموجود حوالين الظرف يختفي بصرياً */
+    mix-blend-mode:screen;
+
+    cursor:pointer;
+
+    transform:translateY(100vh);
+    animation:riseEnvelope 1.5s ease forwards;
+}
+
+@keyframes riseEnvelope{
+    from{
+        transform:translateY(100vh);
+        opacity:0;
+    }
+    to{
+        transform:translateY(0);
+        opacity:1;
+    }
+}
+
+/* الكلام تحت الظرف */
+.click-text{
+    color:white;
+    font-size:18px;
+    letter-spacing:3px;
+    text-shadow:0 2px 8px #000;
+    opacity:0;
+    animation:showText 1s ease 1.3s forwards;
+}
+
+@keyframes showText{
+    to{
+        opacity:1;
+    }
+}
+
+/* حركة خفيفة تلفت النظر للظرف */
+.closed-envelope:hover{
+    transform:scale(1.03);
+}
+
+/* =========================
+   مشهد الظرف المفتوح
+========================= */
+.open-scene{
+    z-index:3;
+    background-image:url("file_000000005d4082118a90fa08f9eb0fcb.png");
+    background-size:cover;
+    background-position:center;
+    flex-direction:column;
+    gap:25px;
+}
+
+.open-scene.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.open-envelope{
+    width:min(78vw,620px);
+    max-height:74vh;
+    object-fit:contain;
+
+    transform:scale(.7);
+    opacity:0;
+    transition:all 1s ease;
+}
+
+.open-scene.show .open-envelope{
+    transform:scale(1);
+    opacity:1;
+}
+
+/* =========================
+   زر القلب
+========================= */
+.heart{
+    width:70px;
+    height:70px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.95);
+    box-shadow:
+        0 0 15px rgba(255,255,255,.8),
+        0 0 35px rgba(255,100,100,.7);
+
+    font-size:36px;
+    cursor:pointer;
+
+    opacity:0;
+    transform:scale(0);
+}
+
+.open-scene.show .heart{
+    animation:
+        heartAppear .8s ease 1.5s forwards,
+        heartBeat 1.3s ease-in-out 2.3s infinite;
+}
+
+@keyframes heartAppear{
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+@keyframes heartBeat{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.12);
+    }
+}
+
+/* =========================
+   الدعوة النهائية
+========================= */
+.final-scene{
+    z-index:5;
+    background:#000;
+}
+
+.final-scene.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.final-invitation{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+/* موبايل */
+@media(max-height:700px){
+    .closed-envelope{
+        width:min(82vw,500px);
+        max-height:48vh;
+    }
+
+    .open-envelope{
+        width:min(82vw,560px);
+        max-height:72vh;
+    }
+
+    .click-text{
+        font-size:15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- خلفية الورد -->
+<div class="scene flowers" id="flowers"></div>
+
+<!-- الظرف المقفول -->
+<div class="scene envelope-scene" id="envelopeScene">
+
+    <img
+        src="file_00000000f12c820d8652b632d299c630.png"
+        class="closed-envelope"
+        id="closedEnvelope"
+        alt="Envelope"
+    >
+
+    <div class="click-text">
+        CLICK TO OPEN...
+    </div>
+
+</div>
+
+<!-- الظرف المفتوح -->
+<div class="scene open-scene" id="openScene">
+
+    <img
+        src="Picsart_26-09-09_22-36-31-917.png"
+        class="open-envelope"
+        alt="Open Envelope"
+    >
+
+    <button class="heart" id="heart">
+        ❤️
+    </button>
+
+</div>
+
+<!-- الدعوة -->
+<div class="scene final-scene" id="finalScene">
+
+    <img
+        src="IMG_20260909_222332_886.webp"
+        class="final-invitation"
+        alt="Wedding Invitation"
+    >
+
+</div>
+
+<audio id="music" preload="auto">
+    <source src="c03312eb25fcbb733a86f27dcc90a851.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const flowers = document.getElementById("flowers");
+const envelopeScene = document.getElementById("envelopeScene");
+const closedEnvelope = document.getElementById("closedEnvelope");
+const openScene = document.getElementById("openScene");
+const heart = document.getElementById("heart");
+const finalScene = document.getElementById("finalScene");
+const music = document.getElementById("music");
+
+
+/* =========================
+   البداية
+========================= */
+
+setTimeout(() => {
+
+    flowers.classList.add("hide");
+
+    setTimeout(() => {
+        envelopeScene.classList.add("show");
+    },700);
+
+},3000);
+
+
+/* =========================
+   الضغط على الظرف المقفول
+========================= */
+
+closedEnvelope.addEventListener("click", () => {
+
+    /* تشغيل الموسيقى */
+    music.currentTime = 0;
+
+    music.play().catch(() => {});
+
+    /* إخفاء الظرف المقفول */
+    envelopeScene.style.opacity = "0";
+
+    setTimeout(() => {
+
+        envelopeScene.style.visibility = "hidden";
+
+        /* إظهار الظرف المفتوح */
+        openScene.classList.add("show");
+
+    },700);
+
+});
+
+
+/* =========================
+   الضغط على القلب
+========================= */
+
+heart.addEventListener("click", () => {
+
+    openScene.style.opacity = "0";
+
+    setTimeout(() => {
+
+        openScene.style.visibility = "hidden";
+
+        finalScene.classList.add("show");
+
+    },700);
+
+});
+
+</script>
+
+</body>
+</html>
