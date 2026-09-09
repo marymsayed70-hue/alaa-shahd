@@ -1,213 +1,448 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alaa & Shahd</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alaa & Shahd</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-    }
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-    }
+/* خلفية الورد ثابتة */
+#flowerBackground {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("file_000000005d4082118a90fa08f9eb0fcb.png");
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
 
-    #flowersScene,
-    #envelopeScene,
-    #inviteScene,
-    #finalScene {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
+/* =========================
+   الظرف المقفول
+========================= */
 
-    #flowersScene img,
-    #envelopeScene img,
-    #inviteScene img,
-    #finalScene img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+#envelopeScene {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
 
-    #flowersScene {
-      display: flex;
-      opacity: 1;
-      transition: opacity 1s ease;
-      z-index: 1;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-    #envelopeScene {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      opacity: 1;
-      transition: opacity 1s ease;
-      z-index: 2;
-    }
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease;
+}
 
-    #envelope {
-      width: min(80vw, 500px);
-      height: auto !important;
-      object-fit: contain !important;
-      cursor: pointer;
-    }
+#envelopeScene.show {
+  opacity: 1;
+  visibility: visible;
+}
 
-    .openText {
-      margin-top: 20px;
-      color: white;
-      font-size: 18px;
-      letter-spacing: 3px;
-      text-shadow: 0 2px 5px #000;
-    }
+/* الظرف يطلع من تحت */
+#envelope {
+  width: min(78vw, 520px);
+  max-height: 55vh;
+  object-fit: contain;
 
-    #inviteScene {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-      z-index: 3;
-    }
+  cursor: pointer;
 
-    #invite {
-      opacity: 0;
-      transform: scale(0.96);
-      transition: opacity 1.5s ease, transform 1.5s ease;
-    }
+  transform: translateY(100vh);
+  opacity: 0;
+}
 
-    #invite.show {
-      opacity: 1;
-      transform: scale(1);
-    }
+#envelopeScene.show #envelope {
+  animation:
+    envelopeRise 1.7s ease-out forwards,
+    envelopePulse 1.5s ease-in-out 2s infinite;
+}
 
-    #heart {
-      position: absolute;
-      bottom: 35px;
-      left: 50%;
-      transform: translateX(-50%) scale(0);
-      width: 65px;
-      height: 65px;
-      border: none;
-      border-radius: 50%;
-      background: white;
-      color: #e85d75;
-      font-size: 34px;
-      cursor: pointer;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-      opacity: 0;
-    }
+@keyframes envelopeRise {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
 
-    #heart.show {
-      opacity: 1;
-      transform: translateX(-50%) scale(1);
-      transition: transform 0.5s ease, opacity 0.5s ease;
-    }
+  70% {
+    transform: translateY(-15px);
+    opacity: 1;
+  }
 
-    #finalScene {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 4;
-    }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
-    #finalScene img {
-      opacity: 0;
-      transform: scale(1.05);
-      transition: opacity 2s ease, transform 2s ease;
-    }
+/* حركة خفيفة للظرف والختم */
+@keyframes envelopePulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,.3));
+  }
 
-    #finalScene img.show {
-      opacity: 1;
-      transform: scale(1);
-    }
-  </style>
+  50% {
+    transform: translateY(-5px) scale(1.02);
+    filter:
+      drop-shadow(0 0 15px rgba(255,60,60,.8))
+      drop-shadow(0 5px 20px rgba(0,0,0,.35));
+  }
+}
+
+/* CLICK TO OPEN */
+.openText {
+  margin-top: 20px;
+
+  color: white;
+  font-size: 17px;
+  letter-spacing: 3px;
+
+  text-shadow: 0 2px 6px #000;
+
+  opacity: 0;
+}
+
+#envelopeScene.show .openText {
+  animation: textShow 1s ease 1.7s forwards;
+}
+
+@keyframes textShow {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   الظرف المفتوح
+========================= */
+
+#inviteScene {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+
+  display: none;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* الظرف المفتوح بعيد عن الأطراف */
+#invite {
+  width: min(76vw, 600px);
+  max-height: 65vh;
+
+  object-fit: contain;
+
+  opacity: 0;
+
+  transform: scale(.82) translateY(20px);
+
+  transition:
+    opacity 1.2s ease,
+    transform 1.2s ease;
+}
+
+#invite.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* =========================
+   القلب
+========================= */
+
+#heart {
+  margin-top: 22px;
+
+  width: 62px;
+  height: 62px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+  color: #e85d75;
+
+  font-size: 32px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,.3),
+    0 0 20px rgba(255,255,255,.5);
+
+  opacity: 0;
+  transform: scale(0);
+}
+
+#heart.show {
+  opacity: 1;
+  transform: scale(1);
+
+  transition:
+    opacity .5s ease,
+    transform .5s ease;
+
+  animation: heartBeat 1.3s ease-in-out 1s infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* =========================
+   الصورة النهائية
+========================= */
+
+#finalScene {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #000;
+}
+
+#finalScene img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  opacity: 0;
+  transform: scale(1.05);
+
+  transition:
+    opacity 2s ease,
+    transform 2s ease;
+}
+
+#finalScene img.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* =========================
+   الموبايل
+========================= */
+
+@media (max-width: 600px) {
+
+  #envelope {
+    width: 80vw;
+    max-height: 50vh;
+  }
+
+  #invite {
+    width: 78vw;
+    max-height: 60vh;
+  }
+
+  .openText {
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+
+  #heart {
+    width: 58px;
+    height: 58px;
+    font-size: 30px;
+  }
+}
+
+@media (max-height: 700px) {
+
+  #envelope {
+    max-height: 45vh;
+  }
+
+  #invite {
+    max-height: 56vh;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <div id="flowersScene">
-    <img src="file_000000005d4082118a90fa08f9eb0fcb.png" alt="">
+<!-- خلفية الورد -->
+<div id="flowerBackground"></div>
+
+
+<!-- الظرف المقفول -->
+<div id="envelopeScene">
+
+  <img
+    id="envelope"
+    src="file_00000000f12c820d8652b632d299c630.png"
+    alt=""
+  >
+
+  <div class="openText">
+    CLICK TO OPEN...
   </div>
 
-  <div id="envelopeScene">
-    <img id="envelope" src="file_00000000f12c820d8652b632d299c630.png" alt="">
-    <div class="openText">CLICK TO OPEN..</div>
-  </div>
+</div>
 
-  <div id="inviteScene">
-    <img id="invite" src="Picsart_26-09-09_22-36-31-917.png" alt="">
-    <button id="heart">♥</button>
-  </div>
 
-  <div id="finalScene">
-    <img src="IMG_20260909_222332_886.webp" alt="">
-  </div>
+<!-- الظرف المفتوح -->
+<div id="inviteScene">
 
-  <audio id="music" preload="auto" loop>
-    <source src="c03312eb25fcbb733a86f27dcc90a851.mp3" type="audio/mpeg">
-  </audio>
+  <img
+    id="invite"
+    src="Picsart_26-09-09_22-36-31-917.png"
+    alt=""
+  >
 
-  <script>
-    const flowersScene = document.getElementById("flowersScene");
-    const envelopeScene = document.getElementById("envelopeScene");
-    const envelope = document.getElementById("envelope");
-    const inviteScene = document.getElementById("inviteScene");
-    const invite = document.getElementById("invite");
-    const heart = document.getElementById("heart");
-    const finalScene = document.getElementById("finalScene");
-    const music = document.getElementById("music");
+  <button id="heart">♥</button>
+
+</div>
+
+
+<!-- الدعوة النهائية -->
+<div id="finalScene">
+
+  <img
+    src="IMG_20260909_222332_886.webp"
+    alt=""
+  >
+
+</div>
+
+
+<!-- الموسيقى -->
+<audio id="music" preload="auto" loop>
+
+  <source
+    src="c03312eb25fcbb733a86f27dcc90a851.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+
+<script>
+
+const envelopeScene =
+  document.getElementById("envelopeScene");
+
+const envelope =
+  document.getElementById("envelope");
+
+const inviteScene =
+  document.getElementById("inviteScene");
+
+const invite =
+  document.getElementById("invite");
+
+const heart =
+  document.getElementById("heart");
+
+const finalScene =
+  document.getElementById("finalScene");
+
+const music =
+  document.getElementById("music");
+
+
+/* بعد 3 ثواني يظهر الظرف */
+
+setTimeout(() => {
+
+  envelopeScene.classList.add("show");
+
+}, 3000);
+
+
+/* الضغط على الظرف */
+
+envelope.addEventListener("click", () => {
+
+  /* تشغيل الموسيقى */
+  music.currentTime = 0;
+  music.volume = 0.45;
+
+  music.play().catch(error => {
+    console.log("Music error:", error);
+  });
+
+
+  /* اختفاء الظرف المقفول */
+  envelopeScene.classList.remove("show");
+
+
+  setTimeout(() => {
+
+    envelopeScene.style.display = "none";
+
+    /* إظهار الظرف المفتوح */
+    inviteScene.style.display = "flex";
 
     setTimeout(() => {
-      flowersScene.style.opacity = "0";
 
-      setTimeout(() => {
-        flowersScene.style.display = "none";
-        envelopeScene.style.display = "flex";
-      }, 1000);
-    }, 3500);
+      invite.classList.add("show");
 
-    envelope.addEventListener("click", () => {
-      music.currentTime = 0;
-      music.volume = 0.45;
+      heart.classList.add("show");
 
-      music.play().catch((error) => {
-        console.log("Music could not play:", error);
-      });
+    }, 100);
 
-      envelopeScene.style.opacity = "0";
+  }, 900);
 
-      setTimeout(() => {
-        envelopeScene.style.display = "none";
-        inviteScene.style.display = "flex";
+});
 
-        setTimeout(() => {
-          invite.classList.add("show");
-          heart.classList.add("show");
-        }, 100);
-      }, 1000);
-    });
 
-    heart.addEventListener("click", () => {
-      inviteScene.style.display = "none";
-      finalScene.style.display = "flex";
+/* الضغط على القلب */
 
-      setTimeout(() => {
-        finalScene.querySelector("img").classList.add("show");
-      }, 100);
-    });
-  </script>
+heart.addEventListener("click", () => {
+
+  inviteScene.style.display = "none";
+
+  finalScene.style.display = "flex";
+
+  setTimeout(() => {
+
+    finalScene
+      .querySelector("img")
+      .classList.add("show");
+
+  }, 100);
+
+});
+
+</script>
 
 </body>
 </html>
